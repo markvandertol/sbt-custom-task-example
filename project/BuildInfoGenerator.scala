@@ -1,21 +1,20 @@
-import sbt.{Def, _}
+import sbt._
 import Keys._
 
 import scala.sys.process._
 
-object BuildInfoGenerator extends AutoPlugin {
-
+object BuildInfoGenerator {
   //Defining the new task:
-  val generateBuildInfo: TaskKey[Seq[File]] = taskKey[Seq[File]]("Generates BuildInfo")
+  lazy val generateBuildInfo: TaskKey[Seq[File]] = taskKey[Seq[File]]("Generates BuildInfo")
 
-  val generateBuildInfoTask: Def.Initialize[Task[Seq[File]]] = Def.task {
+  lazy val generateBuildInfoTask: Def.Initialize[Task[Seq[File]]] = Def.task {
     val filename: File = (resourceManaged in Compile).value / "demo" / "MyBuildInfo.scala"
     writeFile(filename)
     Seq(filename)
   }
 
   //Making the task available to the project
-  override lazy val projectSettings: Seq[Setting[_]] = Seq(
+  lazy val generatorSettings: Seq[Setting[_]] = Seq(
     generateBuildInfo := generateBuildInfoTask.value, //: Def.Setting[Task[Seq[sbt.File]]]
     sourceGenerators in Compile += generateBuildInfo
   )
